@@ -10,12 +10,14 @@ from vec2d import vec2d
 N_CREEPS = 1
 SCREEN_WIDTH, SCREEN_HEIGHT = 1400, 700
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
-CREEP_FILENAMES = [
+CARN_FILENAMES = [
+		"image/enemy_ship_v4.png"]
+HERB_FILENAMES = [
 		"image/enemy_ship_v1.png",
 		"image/enemy_ship_v2.png",
-		"image/enemy_ship_v3.png",
-		"image/enemy_ship_v4.png"]
-creeps = []
+		"image/enemy_ship_v3.png"]
+carns = []
+herbs = []
 
 class Creep(Sprite):
 	##
@@ -95,14 +97,14 @@ class Creep(Sprite):
 		# reproduce another creep after 27 to 55 seconds have passed
 		self._breed += time_passed
 		if self._breed > randint(7000, 15000):
-			creeps.append(Creep(screen, 
-							choice(CREEP_FILENAMES),
+			carns.append(Creep(screen, 
+							choice(CARN_FILENAMES),
 							(	randint(0, SCREEN_WIDTH),
 								randint(0, SCREEN_HEIGHT)),
 							(	choice([-1, 1]),
 								choice([-1, 1])),
 							0.1))
-			N_CREEPS = 0
+			N_CREEPS = 1
 			self._breed = 0
 			
 
@@ -117,8 +119,17 @@ def run_game():
 
 	#Creates N_CREEPS, random creeps.
 	for i in range(N_CREEPS):
-		creeps.append(Creep(screen, 
-							choice(CREEP_FILENAMES),
+		carns.append(Creep(screen, 
+							choice(CARN_FILENAMES),
+							(	randint(0, SCREEN_WIDTH),
+								randint(0, SCREEN_HEIGHT)),
+							(	choice([-1, 1]),
+								choice([-1, 1])),
+							0.1))
+
+	for y in range(N_CREEPS):
+		herbs.append(Creep(screen, 
+							choice(HERB_FILENAMES),
 							(	randint(0, SCREEN_WIDTH),
 								randint(0, SCREEN_HEIGHT)),
 							(	choice([-1, 1]),
@@ -135,12 +146,21 @@ def run_game():
 		
 		# Redraw the background
 		screen.fill(BG_COLOR)
+
+		# No clue how to handle collision
+		# 
+		#pygame.sprite.groupcollide(carns, herbs, 1, 0)
 		
 		# Update and redraw all creeps
-		for creep in creeps:
-			creep.update(time_passed)
-			creep.blitme()
-			creep.reproduce(time_passed)
+		for herb in herbs:
+			herb.update(time_passed)
+			herb.blitme()
+			herb.reproduce(time_passed)
+
+		for carn in carns:
+			carn.update(time_passed)
+			carn.blitme()
+			carn.reproduce(time_passed)
 		
 		pygame.display.flip()
 
