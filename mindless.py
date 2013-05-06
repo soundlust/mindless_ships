@@ -24,29 +24,7 @@ class Creep(Sprite):
 	##
 	def __init__(self, screen, img_filename, init_position, init_direction, speed):
 		
-	##
-	#	Create a new Creep.
-	#
-	#
-	#	screen:
-	#		The screen on which the creep lives ( must be a 
-	#		pygame surface object, such as pygame.display)
-	#
-	#	img_filename:
-	#		Image file for the creep.
-	#
-	#	init_position:
-	#		A vec2d or a pair specifying the initial position 
-	#		of the creep on the screen
-	#
-	#	init_direction:	
-	#		A vec2d or pair specifying the initial direction of the creep. 	
-	#		Must have an angle that is multiple of 45 degrees.
-	#
-	#	speed:
-	#		Creep speed, in pixels/millisecond (px/ms)
-	#
-	##
+	
 		Sprite.__init__(self)
 		
 		self.screen = screen
@@ -59,32 +37,19 @@ class Creep(Sprite):
 		self.base_image = pygame.image.load(img_filename).convert_alpha()
 		self.image = self.base_image
 		
-		#A vector specifying the creep's position on the screen
-		#
 		self.pos = vec2d(init_position)
 		
-		# the direction is a normalized vector
-		#
+		
 		self.direction = vec2d(init_direction).normalized()
 	
 	def update(self, time_passed):
 		self._change_direction(time_passed)
-		##
-		#	Make the creep point in the correct direction.
-		#	since our direction vector is in screen coordinates
-		# (i.e. right bottom is 1,1), and rotate() rotates
-		#counter-clockwise, the angle must be inverted to work correctly
-		#
-		##
+		
 		self.image = pygame.transform.rotate(self.base_image, -self.direction.angle)
 		displacement = vec2d(self.direction.x * self.speed * time_passed, self.direction.y * self.speed * time_passed)
 		
 		self.pos += displacement
-		##
-		# When the image is rotated, its size is changed.
-		# We must take the size into account for detecting 
-		# collisions with the walls
-		##
+		
 		self.image_w, self.image_h = self.image.get_size()
 		bounds_rect = self.screen.get_rect().inflate(
 						-self.image_w, -self.image_h)
@@ -129,7 +94,7 @@ class Creep(Sprite):
 	def reproduce(self, time_passed):
 		# reproduce another creep after 27 to 55 seconds have passed
 		self._breed += time_passed
-		if self._breed > randint(27000, 55000):
+		if self._breed > randint(7000, 15000):
 			creeps.append(Creep(screen, 
 							choice(CREEP_FILENAMES),
 							(	randint(0, SCREEN_WIDTH),
@@ -144,7 +109,7 @@ class Creep(Sprite):
 def run_game():
 	#Basic game window parameters
 	pygame.display.set_caption("Carnivores & Herbavores")
-	BG_COLOR = 100, 100, 80 
+	BG_COLOR = 10, 2, 15 
 
 
 	pygame.init()
@@ -159,11 +124,9 @@ def run_game():
 							(	choice([-1, 1]),
 								choice([-1, 1])),
 							0.1))
-	# The main game loop
-	#
+	
 	while True:
-		# limit frame speed to 50 fps
-		#
+		
 		time_passed = clock.tick(50)
 		
 		for event in pygame.event.get():
@@ -172,7 +135,6 @@ def run_game():
 		
 		# Redraw the background
 		screen.fill(BG_COLOR)
-		# If creep collides with each other, destroy the smaller creep
 		
 		# Update and redraw all creeps
 		for creep in creeps:
